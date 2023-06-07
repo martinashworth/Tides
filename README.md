@@ -8,6 +8,10 @@ The aim is to create a tool that will give local tide times for the next few day
 
 - It's currently a POC in a Jupyter Notebook, py_Tides_v1.ipynb
 
+- ChatGPT also suggested that the rambling Notebook code would be better condensed down in a format something like what is in Tides.py
+
+---
+
 Here's the plan, courtesy of ChatGPT:
 
 1) Reorganize and Document the Code: Go through your Notebook and make sure the code is organized logically. Group related cells together and make sure each cell or group of cells is well-commented so that someone reading your code (including future you) can understand what each part of the code is supposed to do.
@@ -25,5 +29,3 @@ jupyter nbconvert --to script Your_Notebook.ipynb
 6) Error Handling and Logging: In a Jupyter Notebook, you can just look at the output of each cell to see if something went wrong. In a Python script, it's important to include proper error handling (using try/except blocks) and logging so that you can understand what's happening when you run your script.
 
 7) Test Your Script: Finally, make sure to test your script thoroughly. Make sure all the functionality of your original Notebook is working as expected in the Python script.
-
-ChatGPT also suggested that the rambling Notebook code would be better condensed down in a format something like what is in Tides.py
