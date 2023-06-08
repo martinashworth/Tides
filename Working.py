@@ -138,5 +138,4 @@ for row in rows:
 # Convert the data list into a DataFrame.
 df_tides = pd.DataFrame(data, columns=['Day', 'Tide Type', 'Tide Time', 'Tide Height'])
 
-# print(df_tides)
-# print(df)
+df_tides.drop('Tide Type', axis=1, inplace=True)
