@@ -1,11 +1,16 @@
-################################################################################
+
+# - Requirements.txt should contain the following (other modules are included in the standard Python library):
+#     - requests
+#     - pandas
+#     - pytz
+
+###############################################################################
 # make these imports into a set of requirements (see above)
-################################################################################
+###############################################################################
 
 import requests
 import pandas as pd
 import pytz
-import json
 from datetime import date, timedelta, datetime
 from bs4 import BeautifulSoup
 
@@ -13,7 +18,7 @@ from bs4 import BeautifulSoup
 # set and create some variables
 ################################################################################
 
-# Coordinates for [location]: 
+# Coordinates for [location]:
 latitude = '55.951009'
 longitude = '-3.100191'
 
@@ -23,6 +28,7 @@ start_date = date.today()
 ################################################################################
 # function to fetch sunrise and sunset data
 ################################################################################
+
 
 def fetch_sunrise_sunset_data(date_str):
     """Fetch sunrise and sunset times from API."""
@@ -40,6 +46,7 @@ def fetch_sunrise_sunset_data(date_str):
 # function to convert times to local
 ################################################################################
 
+
 def convert_to_bst(time_str):
     """Convert GMT time string to BST."""
     gmt = pytz.timezone('GMT')
@@ -47,6 +54,7 @@ def convert_to_bst(time_str):
     gmt_time = datetime.fromisoformat(time_str).replace(tzinfo=gmt)
     bst_time = gmt_time.astimezone(bst)
     return bst_time.strftime('%H:%M')
+
 
 ################################################################################
 # use the functions to fetch times for one week
@@ -139,3 +147,31 @@ for row in rows:
 df_tides = pd.DataFrame(data, columns=['Day', 'Tide Type', 'Tide Time', 'Tide Height'])
 
 df_tides.drop('Tide Type', axis=1, inplace=True)
+
+df_tides_pivot = df_tides.assign(
+    col_id=df_tides.groupby('Day').cumcount().add(1)
+).pivot_table(
+    index='Day',
+    columns='col_id',
+    values=['Tide Time', 'Tide Height'],
+    aggfunc='first'
+)
+
+# Sort MultiIndex columns by level 1 (col_id) then by level 0 ('Tide Time'/'Tide Height')
+# This will result in 'Tide Time' coming before 'Tide Height' for each col_id
+df_tides_pivot = df_tides_pivot.sort_index(axis=1, level=[1, 0])
+
+# Remove the 'Day' column
+df_tides_pivot = df_tides_pivot.drop('Day', axis=1, errors='ignore')
+
+# Flatten the MultiIndex to join the two levels into a single level
+# Separator between the levels is '_'
+df_tides_pivot.columns = df_tides_pivot.columns.map(lambda x: f'{x[0]}_{x[1]}')
+
+# Create a list of column names in the desired order
+ordered_columns = ['Tide Time_1', 'Tide Height_1', 'Tide Time_2', 'Tide Height_2', 'Tide Time_3', 'Tide Height_3', 'Tide Time_4', 'Tide Height_4']
+
+# Reorder the columns in the DataFrame
+df_tides_pivot = df_tides_pivot[ordered_columns]
+
+df_tides_pivot.info()
