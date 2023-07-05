@@ -1,12 +1,8 @@
 
-# - Requirements.txt should contain the following (other modules are included in the standard Python library):
-#     - requests
-#     - pandas
-#     - pytz
-
-###############################################################################
-# make these imports into a set of requirements (see above)
-###############################################################################
+# Requirements.txt (other modules included in standard Python library):
+#   requests
+#   pandas
+#   pytz
 
 import requests
 import pandas as pd
@@ -14,29 +10,18 @@ import pytz
 from datetime import date, timedelta, datetime
 from bs4 import BeautifulSoup
 
-################################################################################
-# set and create some variables
-################################################################################
-
-# Coordinates for [location]:
+start_date = date.today() # Set start date to current date
 latitude = '55.951009'
 longitude = '-3.100191'
-
-# Set the start date to current date:
-start_date = date.today()
-
-################################################################################
-# function to fetch sunrise and sunset data
-################################################################################
 
 
 def fetch_sunrise_sunset_data(date_str):
     """Fetch sunrise and sunset times from API."""
     url = f'https://api.sunrise-sunset.org/json?lat={latitude}&lng={longitude}&date={date_str}&formatted=0'
     response = requests.get(url)
-
     # Return JSON data if request is successful, else print error and return None
     if response.status_code == 200:
+        print("Sun data fetched successfully")
         return response.json()
     else:
         print(f"Error fetching sunrise/sunset data: {response.status_code}")
